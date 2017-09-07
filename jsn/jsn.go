@@ -155,10 +155,6 @@ func (j Json) Exists(key string) bool {
 	return exists
 }
 
-func (j Json) V(key string) Json {
-	return j.Get(key)
-}
-
 func (j Json) Get(key string) Json {
 	m, ok := j.asMap()
 
@@ -170,18 +166,22 @@ func (j Json) Get(key string) Json {
 	return Json{v, exists}
 }
 
-func (j Json) I(i int) Json {
+func (j Json) K(key string) Json {
+	return j.Get(key)
+}
+
+func (j Json) I(index int) Json {
 	a, ok := j.asArray()
 
 	if !ok {
 		return Json{}
 	}
 
-	if i < 0 || i > len(a)-1 {
+	if index < 0 || index > len(a)-1 {
 		return Json{}
 	}
 
-	return Json{a[i], true}
+	return Json{a[index], true}
 }
 
 func (j Json) Undefined() bool {

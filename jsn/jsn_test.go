@@ -31,40 +31,40 @@ func TestUnmarshalToJson(t *testing.T) {
 	assert.True(t, j.Exists("koko"))
 	assert.False(t, j.Exists("koko2"))
 
-	assert.Equal(t, j.V("moko").String(), String{"cool", true})
-	assert.Equal(t, j.V("no").String(), String{"", false})
+	assert.Equal(t, j.K("moko").String(), String{"cool", true})
+	assert.Equal(t, j.K("no").String(), String{"", false})
 
-	assert.Equal(t, j.V("koko").Int(), Int{1, true})
-	assert.Equal(t, j.V("no").Int(), Int{0, false})
-	assert.Equal(t, j.V("float").Int(), Int{2, true})
-	assert.Equal(t, j.V("float").Float64(), Float64{2.07, true})
+	assert.Equal(t, j.K("koko").Int(), Int{1, true})
+	assert.Equal(t, j.K("no").Int(), Int{0, false})
+	assert.Equal(t, j.K("float").Int(), Int{2, true})
+	assert.Equal(t, j.K("float").Float64(), Float64{2.07, true})
 
-	assert.Equal(t, j.V("deep").V("lala").Undefined(), false)
-	assert.Equal(t, j.V("deep").V("lala").Null(), false)
-	assert.Equal(t, j.V("deep").V("lala").Bool(), Bool{true, true})
-	assert.Equal(t, j.V("deep").V("dada").Undefined(), false)
-	assert.Equal(t, j.V("deep").V("dada").Null(), true)
-	assert.Equal(t, j.V("deep").V("no").Undefined(), true)
-	assert.Equal(t, j.V("deep").V("no").Null(), false)
-	assert.Equal(t, j.V("deep").V("no").NullOrUndefined(), true)
+	assert.Equal(t, j.K("deep").K("lala").Undefined(), false)
+	assert.Equal(t, j.K("deep").K("lala").Null(), false)
+	assert.Equal(t, j.K("deep").K("lala").Bool(), Bool{true, true})
+	assert.Equal(t, j.K("deep").K("dada").Undefined(), false)
+	assert.Equal(t, j.K("deep").K("dada").Null(), true)
+	assert.Equal(t, j.K("deep").K("no").Undefined(), true)
+	assert.Equal(t, j.K("deep").K("no").Null(), false)
+	assert.Equal(t, j.K("deep").K("no").NullOrUndefined(), true)
 
-	require.Len(t, j.V("arr").Array().Values(), 3)
-	assert.Equal(t, j.V("arr").Array().Values()[0].Int(), Int{1, true})
-	assert.Equal(t, j.V("arr").Array().Values()[1].String(), String{"x", true})
-	assert.True(t, j.V("arr").Array().Values()[2].Null())
+	require.Len(t, j.K("arr").Array().Values(), 3)
+	assert.Equal(t, j.K("arr").Array().Values()[0].Int(), Int{1, true})
+	assert.Equal(t, j.K("arr").Array().Values()[1].String(), String{"x", true})
+	assert.True(t, j.K("arr").Array().Values()[2].Null())
 
-	assert.Equal(t, j.V("arr").I(1).String(), String{"x", true})
-	assert.Equal(t, j.V("arr").I(10).String(), String{"", false})
+	assert.Equal(t, j.K("arr").I(1).String(), String{"x", true})
+	assert.Equal(t, j.K("arr").I(10).String(), String{"", false})
 
-	assert.True(t, j.V("jarr").Array().IsValid)
-	assert.Len(t, j.V("jarr").Array().Values(), 2)
-	assert.Equal(t, j.V("jarr").I(0).V("a").Int(), Int{1, true})
-	assert.Equal(t, j.V("jarr").I(1).V("b").Int(), Int{2, true})
+	assert.True(t, j.K("jarr").Array().IsValid)
+	assert.Len(t, j.K("jarr").Array().Values(), 2)
+	assert.Equal(t, j.K("jarr").I(0).K("a").Int(), Int{1, true})
+	assert.Equal(t, j.K("jarr").I(1).K("b").Int(), Int{2, true})
 
-	assert.False(t, j.V("koko").Undefined())
-	assert.True(t, j.V("no").Undefined())
+	assert.False(t, j.K("koko").Undefined())
+	assert.True(t, j.K("no").Undefined())
 
-	require.Len(t, j.V("sarr").Array().Values(), 2)
+	require.Len(t, j.K("sarr").Array().Values(), 2)
 }
 
 func TestBadArrays(t *testing.T) {
@@ -75,15 +75,15 @@ func TestBadArrays(t *testing.T) {
 	}`)
 	require.NoError(t, err)
 
-	assert.Equal(t, 123, j.V("b").Int().Value)
+	assert.Equal(t, 123, j.K("b").Int().Value)
 
-	assert.False(t, j.V("a").Array().IsValid)
-	assert.Len(t, j.V("a").Array().Values(), 0)
+	assert.False(t, j.K("a").Array().IsValid)
+	assert.Len(t, j.K("a").Array().Values(), 0)
 
-	assert.False(t, j.V("b").Array().IsValid)
-	assert.Len(t, j.V("b").Array().Values(), 0)
+	assert.False(t, j.K("b").Array().IsValid)
+	assert.Len(t, j.K("b").Array().Values(), 0)
 
-	assert.True(t, j.V("a").I(0).Undefined())
+	assert.True(t, j.K("a").I(0).Undefined())
 }
 
 func TestMarshal(t *testing.T) {
@@ -116,11 +116,11 @@ func TestMarshal(t *testing.T) {
 func TestNew(t *testing.T) {
 	js, err := NewJson([]byte(`{"koko":"moko"}`))
 	assert.NoError(t, err)
-	assert.Equal(t, js.V("koko").String().Value, "moko")
+	assert.Equal(t, js.K("koko").String().Value, "moko")
 
 	js, err = NewJson(`{"koko":"lala"}`)
 	assert.NoError(t, err)
-	assert.Equal(t, js.V("koko").String().Value, "lala")
+	assert.Equal(t, js.K("koko").String().Value, "lala")
 
 	js, err = NewJson("{broken: }")
 	assert.Error(t, err)
@@ -142,11 +142,11 @@ func TestNewFromMap(t *testing.T) {
 
 	js1, err := NewJson(jm1)
 	assert.NoError(t, err)
-	assert.Equal(t, "moko", js1.V("koko").String().Value)
+	assert.Equal(t, "moko", js1.K("koko").String().Value)
 
 	jm1["koko"] = "lala"
 	assert.Equal(t, "lala", jm1["koko"].(string))
-	assert.Equal(t, "moko", js1.V("koko").String().Value)
+	assert.Equal(t, "moko", js1.K("koko").String().Value)
 
 	jm2 := Map{
 		"koko": make(chan int),
@@ -161,7 +161,7 @@ func TestNewFromReader(t *testing.T) {
 
 	j, err := NewJson(reader)
 	assert.NoError(t, err)
-	assert.Equal(t, "moko", j.V("koko").String().Value)
+	assert.Equal(t, "moko", j.K("koko").String().Value)
 }
 
 func TestUnmarshal(t *testing.T) {
@@ -180,7 +180,7 @@ func TestUnmarshal(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	err = j.V("pix").Unmarshal(&pixel)
+	err = j.K("pix").Unmarshal(&pixel)
 	assert.NoError(t, err)
 	assert.Equal(t, pixel, Pixel{123, 456})
 }
@@ -210,8 +210,8 @@ func TestUnmarshalArray(t *testing.T) {
 	require.False(t, jarr.Undefined())
 	require.True(t, jarr.Array().IsValid)
 	require.Len(t, jarr.Array().Values(), 2)
-	assert.Equal(t, 10, jarr.Array().Values()[0].V("x").Int().Value)
-	assert.Equal(t, Int{0, false}, jarr.Array().Values()[0].V("z").Int())
+	assert.Equal(t, 10, jarr.Array().Values()[0].K("x").Int().Value)
+	assert.Equal(t, Int{0, false}, jarr.Array().Values()[0].K("z").Int())
 
 	notArrStr := `{"a": 1}`
 	err = json.Unmarshal([]byte(notArrStr), &jarr)
