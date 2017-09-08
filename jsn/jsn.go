@@ -10,26 +10,40 @@ import (
 
 type Map map[string]interface{}
 
-type ErrorCallback func(err error)
+// TODO: how to handle error? ..
+func (m Map) Json() Json {
+	j, _ := NewJson(m)
+	return j
+}
 
-func (m Map) Marshal(cb ErrorCallback) string {
+func (m Map) Marshal() (string, error) {
 	buf, err := json.Marshal(m)
 	if err != nil {
-		if cb != nil {
-			cb(err)
-		}
+		return "", err
+	}
+	return string(buf), err
+}
+
+func (m Map) MarshalIndent(prefix, indent string) (string, error) {
+	buf, err := json.MarshalIndent(m, prefix, indent)
+	if err != nil {
+		return "", err
+	}
+	return string(buf), err
+}
+
+func (m Map) Pretty() string {
+	buf, err := json.MarshalIndent(m, "", "  ")
+	if err != nil {
 		return ""
 	}
 
 	return string(buf)
 }
 
-func (m Map) MarshalPretty(cb ErrorCallback) string {
-	buf, err := json.MarshalIndent(m, "", "  ")
+func (m Map) StringIndent(prefix, indent string) string {
+	buf, err := json.MarshalIndent(m, prefix, indent)
 	if err != nil {
-		if cb != nil {
-			cb(err)
-		}
 		return ""
 	}
 
@@ -38,7 +52,12 @@ func (m Map) MarshalPretty(cb ErrorCallback) string {
 
 // implementing the fmt.Stringer interface
 func (m Map) String() string {
-	return m.Marshal(nil)
+	buf, err := json.Marshal(m)
+	if err != nil {
+		return ""
+	}
+
+	return string(buf)
 }
 
 //////////////////

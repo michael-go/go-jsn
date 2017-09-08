@@ -91,26 +91,39 @@ func TestMarshal(t *testing.T) {
 		"key": "value",
 	}
 
-	str := j.Marshal(nil)
-	assert.Equal(t, `{"key":"value"}`, str)
-	str = j.MarshalPretty(nil)
+	assert.Equal(t, `{"key":"value"}`, j.String())
 	assert.Equal(t, `{
   "key": "value"
+}`, j.Pretty())
+	assert.Equal(t, `{
+   "key": "value"
+}`, j.StringIndent("", "   "))
+
+	str, err := j.Marshal()
+	assert.NoError(t, err)
+	assert.Equal(t, `{"key":"value"}`, str)
+
+	str, err = j.MarshalIndent("", "   ")
+	assert.NoError(t, err)
+	assert.Equal(t, `{
+   "key": "value"
 }`, str)
 
-	j = Map{
-		"bad": make(chan int),
+	jbad := Map{
+		"good": true,
+		"bad":  make(chan int),
 	}
 
-	str = j.Marshal(nil)
+	assert.Equal(t, "", jbad.String())
+	assert.Equal(t, "", jbad.Pretty())
+
+	str, err = jbad.Marshal()
+	assert.Error(t, err)
 	assert.Equal(t, "", str)
 
-	errCallbackCalled := false
-	str = j.Marshal(func(err error) {
-		errCallbackCalled = true
-	})
+	str, err = jbad.MarshalIndent("", " ")
+	assert.Error(t, err)
 	assert.Equal(t, "", str)
-	assert.True(t, errCallbackCalled)
 }
 
 func TestNew(t *testing.T) {
