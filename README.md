@@ -53,7 +53,7 @@ if err != nil {
 
 // dive through keys & array indexes:
 fmt.Println(j.K("go").K("pher").I(2).K("name").String().Value)
-// => "gogo"
+// => gogo
 
 // asking for the wrong type:
 fmt.Println(j.K("go").K("path").Bool().Value)
@@ -96,6 +96,30 @@ if g, ok := j["go"].(map[string]interface{}); ok {
 }
 fmt.Println(value)
 // => gogo
+```
+
+### Iterating arrays
+
+```go
+j, _ := jsn.NewJson(`[1, "two", {"tree": true}]`)
+
+for i, e := range j.Array().Values() {
+    fmt.Printf("[%d]: %s\n", i, e.ToString())
+}
+// =>
+// [0]: 1
+// [1]: "two"
+// [2]: {"tree":true}
+
+notArray := j.K("no").Array()
+fmt.Println("valid?:", notArray.IsValid)
+fmt.Println("len:", len(notArray.Values()))
+for i, e := range notArray.Values() {
+    fmt.Printf("[%d]: %s\n", i, e.ToString())
+}
+// =>
+// valid?: false
+// len: 0
 ```
 
 ## Composing JSON objects

@@ -297,6 +297,49 @@ func (j Json) Unmarshal(target interface{}) error {
 	return json.Unmarshal(bytes, target)
 }
 
+func (j Json) Marshal() (string, error) {
+	buf, err := json.Marshal(j)
+	if err != nil {
+		return "", err
+	}
+	return string(buf), err
+}
+
+func (j Json) MarshalIndent(prefix, indent string) (string, error) {
+	buf, err := json.MarshalIndent(j, prefix, indent)
+	if err != nil {
+		return "", err
+	}
+	return string(buf), err
+}
+
+func (j Json) Pretty() string {
+	buf, err := json.MarshalIndent(j, "", "  ")
+	if err != nil {
+		return ""
+	}
+
+	return string(buf)
+}
+
+func (j Json) ToStringIndent(prefix, indent string) string {
+	buf, err := json.MarshalIndent(j, prefix, indent)
+	if err != nil {
+		return ""
+	}
+
+	return string(buf)
+}
+
+func (j Json) ToString() string {
+	buf, err := json.Marshal(j)
+	if err != nil {
+		return ""
+	}
+
+	return string(buf)
+}
+
 // implementing json.Marshaler interface
 func (j Json) MarshalJSON() ([]byte, error) {
 	if j.exists {

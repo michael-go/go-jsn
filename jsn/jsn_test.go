@@ -86,7 +86,7 @@ func TestBadArrays(t *testing.T) {
 	assert.True(t, j.K("a").I(0).Undefined())
 }
 
-func TestMarshal(t *testing.T) {
+func TestMarshalMap(t *testing.T) {
 	j := Map{
 		"key": "value",
 	}
@@ -124,6 +124,19 @@ func TestMarshal(t *testing.T) {
 	str, err = jbad.MarshalIndent("", " ")
 	assert.Error(t, err)
 	assert.Equal(t, "", str)
+}
+
+func TestMarshalJson(t *testing.T) {
+	j, err := NewJson(`[1, {"a": true}]`)
+	require.NoError(t, err)
+
+	assert.Equal(t, `[1,{"a":true}]`, j.ToString())
+	assert.Equal(t, `[
+  1,
+  {
+    "a": true
+  }
+]`, j.Pretty())
 }
 
 func TestNew(t *testing.T) {
