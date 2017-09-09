@@ -92,7 +92,7 @@ type Array struct {
 	IsValid  bool
 }
 
-func (a Array) Values() []Json {
+func (a Array) Elements() []Json {
 	if !a.IsValid || a.elements == nil {
 		return []Json{}
 	}

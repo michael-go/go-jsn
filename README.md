@@ -103,7 +103,7 @@ fmt.Println(value)
 ```go
 j, _ := jsn.NewJson(`[1, "two", {"tree": true}]`)
 
-for i, e := range j.Array().Values() {
+for i, e := range j.Array().Elements() {
     fmt.Printf("[%d]: %s\n", i, e.ToString())
 }
 // =>
@@ -113,8 +113,8 @@ for i, e := range j.Array().Values() {
 
 notArray := j.K("no").Array()
 fmt.Println("valid?:", notArray.IsValid)
-fmt.Println("len:", len(notArray.Values()))
-for i, e := range notArray.Values() {
+fmt.Println("len:", len(notArray.Elements()))
+for i, e := range notArray.Elements() {
     fmt.Printf("[%d]: %s\n", i, e.ToString())
 }
 // =>

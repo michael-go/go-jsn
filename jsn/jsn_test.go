@@ -48,23 +48,23 @@ func TestUnmarshalToJson(t *testing.T) {
 	assert.Equal(t, j.K("deep").K("no").Null(), false)
 	assert.Equal(t, j.K("deep").K("no").NullOrUndefined(), true)
 
-	require.Len(t, j.K("arr").Array().Values(), 3)
-	assert.Equal(t, j.K("arr").Array().Values()[0].Int(), Int{1, true})
-	assert.Equal(t, j.K("arr").Array().Values()[1].String(), String{"x", true})
-	assert.True(t, j.K("arr").Array().Values()[2].Null())
+	require.Len(t, j.K("arr").Array().Elements(), 3)
+	assert.Equal(t, j.K("arr").Array().Elements()[0].Int(), Int{1, true})
+	assert.Equal(t, j.K("arr").Array().Elements()[1].String(), String{"x", true})
+	assert.True(t, j.K("arr").Array().Elements()[2].Null())
 
 	assert.Equal(t, j.K("arr").I(1).String(), String{"x", true})
 	assert.Equal(t, j.K("arr").I(10).String(), String{"", false})
 
 	assert.True(t, j.K("jarr").Array().IsValid)
-	assert.Len(t, j.K("jarr").Array().Values(), 2)
+	assert.Len(t, j.K("jarr").Array().Elements(), 2)
 	assert.Equal(t, j.K("jarr").I(0).K("a").Int(), Int{1, true})
 	assert.Equal(t, j.K("jarr").I(1).K("b").Int(), Int{2, true})
 
 	assert.False(t, j.K("koko").Undefined())
 	assert.True(t, j.K("no").Undefined())
 
-	require.Len(t, j.K("sarr").Array().Values(), 2)
+	require.Len(t, j.K("sarr").Array().Elements(), 2)
 }
 
 func TestBadArrays(t *testing.T) {
@@ -78,10 +78,10 @@ func TestBadArrays(t *testing.T) {
 	assert.Equal(t, 123, j.K("b").Int().Value)
 
 	assert.False(t, j.K("a").Array().IsValid)
-	assert.Len(t, j.K("a").Array().Values(), 0)
+	assert.Len(t, j.K("a").Array().Elements(), 0)
 
 	assert.False(t, j.K("b").Array().IsValid)
-	assert.Len(t, j.K("b").Array().Values(), 0)
+	assert.Len(t, j.K("b").Array().Elements(), 0)
 
 	assert.True(t, j.K("a").I(0).Undefined())
 }
@@ -221,7 +221,7 @@ func TestMarshalArray(t *testing.T) {
 		true,
 	}
 
-	bytes, err := json.Marshal(jarr.Values())
+	bytes, err := json.Marshal(jarr.Elements())
 	assert.NoError(t, err)
 	assert.Equal(t, `[1,"koko",null]`, string(bytes))
 }
@@ -235,9 +235,9 @@ func TestUnmarshalArray(t *testing.T) {
 
 	require.False(t, jarr.Undefined())
 	require.True(t, jarr.Array().IsValid)
-	require.Len(t, jarr.Array().Values(), 2)
-	assert.Equal(t, 10, jarr.Array().Values()[0].K("x").Int().Value)
-	assert.Equal(t, Int{0, false}, jarr.Array().Values()[0].K("z").Int())
+	require.Len(t, jarr.Array().Elements(), 2)
+	assert.Equal(t, 10, jarr.Array().Elements()[0].K("x").Int().Value)
+	assert.Equal(t, Int{0, false}, jarr.Array().Elements()[0].K("z").Int())
 
 	notArrStr := `{"a": 1}`
 	err = json.Unmarshal([]byte(notArrStr), &jarr)
