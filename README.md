@@ -7,7 +7,7 @@
 ### WORK IN PROGRESS - INTERFACES WILL CHANGE
 
 ## Features
-* Flexibale constructor - consumes `string`, `[]byte`, `io.Reader` and any `interface{}` that is `json` Marshalable
+* Flexibale constructor
 * Safe (no `panic()`) access to keys of deeply nested JSONs (including arrays)
 * value getters return a struct `{Value, IsValid}` instead of multiple return params for easier inlining (`Value` defaulting to a sensible default)
 * Implementing `sql.Scanner` & `sql.Valuer` for easy integration with JSON columns
@@ -25,8 +25,41 @@ import "github.com/michael-go/go-jsn/jsn"
 
 ### General
 
-* `jsn.Json` represents any valid JSON including: map, array, bool, number, string, or null
-* `jsn.Map` represents only a JSON map. Useful for composing JSON objets
+`jsn.Json` represents any valid JSON including: map, array, bool, number, string, or null.
+
+a `Json` can be constructed in several ways:
+* via `jsn.NewJson()` accepting:
+    * a JSON string from a  `string`, `[]byte`, `io.Reader`
+    * any `interface{}` that is `json.Marshal`-able
+```go 
+j, err := jsn.NewJson(`{"go": 1}`)
+```
+```go
+func handler(w http.ResponseWriter, r *http.Request) {
+    j, err := jsn.NewJson(r.Body)
+}
+```
+```go
+type User struct {
+    Name string
+    Email string
+}
+j, err = jsn.NewJson(Pixel{"Gopher", "gopher@golang.org"})
+```
+* scanned from a JSON database column (works for both string and `jsonb` )
+```go
+var email string
+var prefs jsn.Json
+err := db.QueryRow(`SELECT email, prefs FROM users`).Scan(&email, &prefs)
+```
+* via `json.Umarshal()` 
+```go
+err = json.Unmarshal([]byte(`{}`), &j)
+```
+* via `jsn.Map`
+```go
+j = jsn.Map{"time": time.Now()}.Json()
+```
 
 ### Accessing nested values:
 
@@ -71,15 +104,7 @@ fmt.Printf("%#v\n", j.K("no").K("pher").Int())
 Safely getting the "gogo" value in the first example above via vanilla `Go` would look like 🙈:
 ```go
 var j map[string]interface{}
-err := json.Unmarshal([]byte(`{
-    "go": {
-        "pher": [10, "koko", {
-            "lang": 20,
-            "name": "gogo"
-        }],
-        "path": "/home"
-    }
-}`), &j)
+err := json.Unmarshal([]byte(`{<...>}`, &j)
 if err != nil {
     panic(err)
 }
@@ -147,7 +172,7 @@ fmt.Println(jm.Pretty())
 // => same as above but pretty
 ```
 
-**Note**: because `interface{}` can be anything, it is possible to create a `jsn.Map` that is not a valid JSON - i.e. `json.Marshal()` will fail on it. This can happen is a value is not marshalable - see https://golang.org/pkg/encoding/json/#Marshal.
+**Note**: because `interface{}` can be anything, it is possible to create a `jsn.Map` that is not a valid JSON - i.e. `json.Marshal()` will fail on it. This can happen if a value is not marshalable - see https://golang.org/pkg/encoding/json/#Marshal.
 In such case `String()` & `Pretty()` will return an empty string
 
 ---
