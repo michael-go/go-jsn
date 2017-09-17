@@ -41,8 +41,8 @@ func (m Map) Pretty() string {
 	return string(buf)
 }
 
-func (m Map) StringIndent(prefix, indent string) string {
-	buf, err := json.MarshalIndent(m, prefix, indent)
+func (m Map) Stringify() string {
+	buf, err := json.Marshal(m)
 	if err != nil {
 		return ""
 	}
@@ -50,9 +50,8 @@ func (m Map) StringIndent(prefix, indent string) string {
 	return string(buf)
 }
 
-// implementing the fmt.Stringer interface
-func (m Map) String() string {
-	buf, err := json.Marshal(m)
+func (m Map) StringifyIndent(prefix, indent string) string {
+	buf, err := json.MarshalIndent(m, prefix, indent)
 	if err != nil {
 		return ""
 	}
@@ -326,7 +325,7 @@ func (j Json) Pretty() string {
 	return string(buf)
 }
 
-func (j Json) ToStringIndent(prefix, indent string) string {
+func (j Json) StringifyIndent(prefix, indent string) string {
 	buf, err := json.MarshalIndent(j, prefix, indent)
 	if err != nil {
 		return ""
@@ -335,7 +334,7 @@ func (j Json) ToStringIndent(prefix, indent string) string {
 	return string(buf)
 }
 
-func (j Json) ToString() string {
+func (j Json) Stringify() string {
 	buf, err := json.Marshal(j)
 	if err != nil {
 		return ""

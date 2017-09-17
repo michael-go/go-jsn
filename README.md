@@ -129,7 +129,7 @@ fmt.Println(value)
 j, _ := jsn.NewJson(`[1, "two", {"tree": true}]`)
 
 for i, e := range j.Array().Elements() {
-    fmt.Printf("[%d]: %s\n", i, e.ToString())
+    fmt.Printf("[%d]: %s\n", i, e.Stringify())
 }
 // =>
 // [0]: 1
@@ -140,7 +140,7 @@ notArray := j.K("no").Array()
 fmt.Println("valid?:", notArray.IsValid)
 fmt.Println("len:", len(notArray.Elements()))
 for i, e := range notArray.Elements() {
-    fmt.Printf("[%d]: %s\n", i, e.ToString())
+    fmt.Printf("[%d]: %s\n", i, e.Stringify())
 }
 // =>
 // valid?: false
@@ -166,7 +166,7 @@ jm := jsn.Map{
     "location": Pixel{X: 13, Y: 37},
 }
 
-fmt.Println(jm)
+fmt.Println(jm.Stringify())
 // => {"location":{"X":13,"Y":37},"songs":[{"hip":"hop"},{"hoo":"ray"}],"time":"2017-09-08T14:40:23.903861328+03:00"} 
 fmt.Println(jm.Pretty())
 // => same as above but pretty

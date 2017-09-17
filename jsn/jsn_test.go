@@ -95,13 +95,13 @@ func TestMarshalMap(t *testing.T) {
 		"key": "value",
 	}
 
-	assert.Equal(t, `{"key":"value"}`, j.String())
+	assert.Equal(t, `{"key":"value"}`, j.Stringify())
 	assert.Equal(t, `{
   "key": "value"
 }`, j.Pretty())
 	assert.Equal(t, `{
    "key": "value"
-}`, j.StringIndent("", "   "))
+}`, j.StringifyIndent("", "   "))
 
 	str, err := j.Marshal()
 	assert.NoError(t, err)
@@ -118,7 +118,7 @@ func TestMarshalMap(t *testing.T) {
 		"bad":  make(chan int),
 	}
 
-	assert.Equal(t, "", jbad.String())
+	assert.Equal(t, "", jbad.Stringify())
 	assert.Equal(t, "", jbad.Pretty())
 
 	str, err = jbad.Marshal()
@@ -134,7 +134,7 @@ func TestMarshalJson(t *testing.T) {
 	j, err := NewJson(`[1, {"a": true}]`)
 	require.NoError(t, err)
 
-	assert.Equal(t, `[1,{"a":true}]`, j.ToString())
+	assert.Equal(t, `[1,{"a":true}]`, j.Stringify())
 	assert.Equal(t, `[
   1,
   {
