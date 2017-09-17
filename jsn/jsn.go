@@ -283,6 +283,10 @@ func (j Json) Array() Array {
 	return Array{a, ok}
 }
 
+func (j Json) Raw() interface{} {
+	return j.data
+}
+
 func (j Json) Unmarshal(target interface{}) error {
 	var data interface{}
 	if j.exists {

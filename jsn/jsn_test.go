@@ -48,6 +48,10 @@ func TestUnmarshalToJson(t *testing.T) {
 	assert.Equal(t, j.K("deep").K("no").Null(), false)
 	assert.Equal(t, j.K("deep").K("no").NullOrUndefined(), true)
 
+	assert.NotNil(t, j.K("koko").Raw())
+	assert.Equal(t, 1.0, j.K("koko").Raw().(float64))
+	assert.Nil(t, j.K("no").Raw())
+
 	require.Len(t, j.K("arr").Array().Elements(), 3)
 	assert.Equal(t, j.K("arr").Array().Elements()[0].Int(), Int{1, true})
 	assert.Equal(t, j.K("arr").Array().Elements()[1].String(), String{"x", true})
