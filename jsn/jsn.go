@@ -16,6 +16,10 @@ func (m Map) Json() Json {
 	return j
 }
 
+func (m Map) Raw() map[string]interface{} {
+	return map[string]interface{}(m)
+}
+
 func (m Map) Marshal() (string, error) {
 	buf, err := json.Marshal(m)
 	if err != nil {
@@ -146,8 +150,6 @@ func (j Json) asMap() (m map[string]interface{}, ok bool) {
 	switch j.data.(type) {
 	case map[string]interface{}:
 		return j.data.(map[string]interface{}), true
-	case Map:
-		return map[string]interface{}(j.data.(Map)), true
 	default:
 		return nil, false
 	}
