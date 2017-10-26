@@ -147,6 +147,27 @@ for i, e := range notArray.Elements() {
 // len: 0
 ```
 
+### Iterating Maps
+
+```go
+j, _ := jsn.NewJson(`{
+    "name": "gopher",
+    "age": 10,
+    "data": {"go": true}
+}`)
+
+count := j.IterMap(func(k string, v jsn.Json) bool {
+    fmt.Printf(" %s: %s\n", k, v.Stringify())
+    return true // return false to break
+})
+fmt.Printf("iterated %d keys\n", count)
+// =>
+//  name: "gopher"
+//  data: {"go":true}
+//  age: 10
+// iterated 3 keys
+```
+
 ## Composing JSON objects
 `jsn.Map` is just a fancy alias to `map[string]interface{}`, but sometimes the little things in life make all the difference. 
 It also has some convinience methods for easirer marshling.

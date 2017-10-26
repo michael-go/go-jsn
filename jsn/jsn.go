@@ -204,6 +204,27 @@ func (j Json) I(index int) Json {
 	return Json{a[index], true}
 }
 
+// IterMap calls the callback for every kay-value pair in a JSON map,
+// and returns the number of keys iterated.
+// If it's not a map value, this method will do nothing.
+// Caller can break the loop by returning false from the callback.
+func (j Json) IterMap(f func(key string, value Json) bool) int {
+	m, ok := j.asMap()
+	if !ok {
+		return 0
+	}
+
+	count := 0
+	for k, v := range m {
+		count += 1
+		if !f(k, Json{v, true}) {
+			break
+		}
+	}
+
+	return count
+}
+
 func (j Json) Undefined() bool {
 	return !j.exists
 }

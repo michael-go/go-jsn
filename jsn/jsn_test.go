@@ -71,6 +71,55 @@ func TestUnmarshalToJson(t *testing.T) {
 	require.Len(t, j.K("sarr").Array().Elements(), 2)
 }
 
+func TestItemMap(t *testing.T) {
+	j, err := NewJson(`{
+		"a": 1, 	
+		"b": 2
+	}`)
+	require.NoError(t, err)
+
+	expected := map[string]int{
+		"a": 1,
+		"b": 2,
+	}
+	count := j.IterMap(func(k string, v Json) bool {
+		e, ok := expected[k]
+		assert.True(t, ok)
+		assert.Equal(t, e, v.Int().Value)
+
+		delete(expected, k)
+
+		return true
+	})
+	assert.Equal(t, expected, map[string]int{})
+	assert.Equal(t, 2, count)
+
+	expected = map[string]int{
+		"a": 1,
+		"b": 2,
+	}
+	count = j.IterMap(func(k string, v Json) bool {
+		e, ok := expected[k]
+		assert.True(t, ok)
+		assert.Equal(t, e, v.Int().Value)
+
+		delete(expected, k)
+
+		return false
+	})
+	assert.Equal(t, 1, len(expected))
+	assert.Equal(t, 1, count)
+
+	a, err := NewJson("[1,2,3]")
+	require.NoError(t, err)
+
+	count = a.IterMap(func(k string, v Json) bool {
+		assert.True(t, false, "should not be executed")
+		return true
+	})
+	assert.Equal(t, 0, count)
+}
+
 func TestBadArrays(t *testing.T) {
 	j, err := NewJson(`{
 		"a": null,
