@@ -36,7 +36,7 @@ j, err := jsn.NewJson(`{"go": 1}`)
 ```
 ```go
 func handler(w http.ResponseWriter, r *http.Request) {
-    j, err := jsn.NewJson(r.Body)
+    j, err := jsn.NewJson(r.Body) // io.Reader
 }
 ```
 ```go
@@ -46,17 +46,17 @@ type User struct {
 }
 j, err = jsn.NewJson(Pixel{"Gopher", "gopher@golang.org"})
 ```
-* scanned from a JSON database column (works for both string and `jsonb` )
+* scanned from a JSON database column (works for both string and `jsonb` ):
 ```go
 var email string
 var prefs jsn.Json
 err := db.QueryRow(`SELECT email, prefs FROM users`).Scan(&email, &prefs)
 ```
-* via `json.Umarshal()` 
+* via `json.Umarshal()` :
 ```go
 err = json.Unmarshal([]byte(`{}`), &j)
 ```
-* via `jsn.Map`
+* via `jsn.Map`:
 ```go
 j = jsn.Map{"time": time.Now()}.Json()
 ```
@@ -181,5 +181,6 @@ In such case `String()` & `Pretty()` will return an empty string
 * Also dealing with arbitrary JSON:
     * https://github.com/Jeffail/gabs
     * https://github.com/bitly/go-simplejson
+    * https://github.com/antonholmquist/jason
 * https://github.com/guregu/null
 
