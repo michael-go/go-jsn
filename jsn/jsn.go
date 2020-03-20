@@ -1,3 +1,6 @@
+// Package jsn was created to make arbitrary JSON handling more fun.
+//
+// more info at in the repo README: https://github.com/michael-go/go-jsn
 package jsn
 
 import (
@@ -8,93 +11,45 @@ import (
 	"strings"
 )
 
-type Map map[string]interface{}
-
-// TODO: how to handle error? ..
-func (m Map) Json() Json {
-	j, _ := NewJson(m)
-	return j
-}
-
-func (m Map) Raw() map[string]interface{} {
-	return map[string]interface{}(m)
-}
-
-func (m Map) Marshal() (string, error) {
-	buf, err := json.Marshal(m)
-	if err != nil {
-		return "", err
-	}
-	return string(buf), err
-}
-
-func (m Map) MarshalIndent(prefix, indent string) (string, error) {
-	buf, err := json.MarshalIndent(m, prefix, indent)
-	if err != nil {
-		return "", err
-	}
-	return string(buf), err
-}
-
-func (m Map) Pretty() string {
-	buf, err := json.MarshalIndent(m, "", "  ")
-	if err != nil {
-		return ""
-	}
-
-	return string(buf)
-}
-
-func (m Map) Stringify() string {
-	buf, err := json.Marshal(m)
-	if err != nil {
-		return ""
-	}
-
-	return string(buf)
-}
-
-func (m Map) StringifyIndent(prefix, indent string) string {
-	buf, err := json.MarshalIndent(m, prefix, indent)
-	if err != nil {
-		return ""
-	}
-
-	return string(buf)
-}
-
-//////////////////
-
+// String carries a string .Value if .IsValid
 type String struct {
 	Value   string
 	IsValid bool
 }
 
+// Int carries an int .Value if .IsValid
 type Int struct {
 	Value   int
 	IsValid bool
 }
 
+// Int64 carries an int64 .Value if .IsValid
 type Int64 struct {
 	Value   int64
 	IsValid bool
 }
 
+// Float64 carries a float64 .Value if .IsValid
 type Float64 struct {
 	Value   float64
 	IsValid bool
 }
 
+// Bool carries a bool .Value if .IsValid
 type Bool struct {
 	Value   bool
 	IsValid bool
 }
 
+// Array represents a JSON array, if .IsValid
+// the actual data is opaque and can be accessed via Array's methods
 type Array struct {
 	elements []interface{}
 	IsValid  bool
 }
 
+// Elements returns an array of Json items.
+// Defaults to empty array if !(.IsValid)
 func (a Array) Elements() []Json {
 	if !a.IsValid || a.elements == nil {
 		return []Json{}
@@ -110,11 +65,16 @@ func (a Array) Elements() []Json {
 
 /////////////////
 
+// Json represents any valid JSON: map, array, bool, number, string, or null.
+// it's an opaque structure, and the data can be accessed via it's methods
 type Json struct {
 	data   interface{}
 	exists bool
 }
 
+// NewJson constructs a new Json object from a wide variety of sources:
+// - a JSON string from a string, []byte, io.Reader
+// - any interface{} that is json.Marshal-able
 func NewJson(src interface{}) (js Json, err error) {
 	var data interface{}
 
@@ -164,6 +124,8 @@ func (j Json) asArray() (a []interface{}, ok bool) {
 	return
 }
 
+// Exists returns true if it's a Json map and the key exists.
+// returns false otherwise
 func (j Json) Exists(key string) bool {
 	m, ok := j.asMap()
 
@@ -175,6 +137,8 @@ func (j Json) Exists(key string) bool {
 	return exists
 }
 
+// Get returns the nested Json value under a key.
+// returns an empty Json{} if key doesn't exists, or if this isn't a map
 func (j Json) Get(key string) Json {
 	m, ok := j.asMap()
 
@@ -186,10 +150,13 @@ func (j Json) Get(key string) Json {
 	return Json{v, exists}
 }
 
+// K is a shortcut for Get()
 func (j Json) K(key string) Json {
 	return j.Get(key)
 }
 
+// I returns a array element by index.
+// if index is out of bounds, or if this is not an array, it returns an undefined Json{}
 func (j Json) I(index int) Json {
 	a, ok := j.asArray()
 
@@ -216,7 +183,7 @@ func (j Json) IterMap(f func(key string, value Json) bool) int {
 
 	count := 0
 	for k, v := range m {
-		count += 1
+		count++
 		if !f(k, Json{v, true}) {
 			break
 		}
@@ -225,14 +192,20 @@ func (j Json) IterMap(f func(key string, value Json) bool) int {
 	return count
 }
 
+// Undefined returns true if this Json is undefined.
+// in example result of .Get(key) with a key that doesn't exist.
+// like in JS, Null() != Undefined().
 func (j Json) Undefined() bool {
 	return !j.exists
 }
 
+// Null returns true if this object represents a JSON null.
+// like in JS, Null() != Undefined().
 func (j Json) Null() bool {
 	return j.exists && j.data == nil
 }
 
+// NullOrUndefined returns (.Null() || .Undefined())
 func (j Json) NullOrUndefined() bool {
 	return j.data == nil
 }
@@ -404,4 +377,63 @@ func (j Json) Reader() io.Reader {
 	bytes, _ := json.Marshal(j)
 
 	return strings.NewReader(string(bytes))
+}
+
+////
+
+// Map is just an alias to `map[string]interface{}` for easier construction
+// of json objects
+type Map map[string]interface{}
+
+// TODO: how to handle error? ..
+func (m Map) Json() Json {
+	j, _ := NewJson(m)
+	return j
+}
+
+func (m Map) Raw() map[string]interface{} {
+	return map[string]interface{}(m)
+}
+
+func (m Map) Marshal() (string, error) {
+	buf, err := json.Marshal(m)
+	if err != nil {
+		return "", err
+	}
+	return string(buf), err
+}
+
+func (m Map) MarshalIndent(prefix, indent string) (string, error) {
+	buf, err := json.MarshalIndent(m, prefix, indent)
+	if err != nil {
+		return "", err
+	}
+	return string(buf), err
+}
+
+func (m Map) Pretty() string {
+	buf, err := json.MarshalIndent(m, "", "  ")
+	if err != nil {
+		return ""
+	}
+
+	return string(buf)
+}
+
+func (m Map) Stringify() string {
+	buf, err := json.Marshal(m)
+	if err != nil {
+		return ""
+	}
+
+	return string(buf)
+}
+
+func (m Map) StringifyIndent(prefix, indent string) string {
+	buf, err := json.MarshalIndent(m, prefix, indent)
+	if err != nil {
+		return ""
+	}
+
+	return string(buf)
 }
